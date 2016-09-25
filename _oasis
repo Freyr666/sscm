@@ -1,0 +1,20 @@
+Name: sscm
+Version: 0.1
+Synopsis: Simple scheme interpreter.
+Authors: freyr <sky_rider_93@mail.ru>
+License: LGPL with OCaml linking exception
+
+Description: FooBar allows to combine foo and bar efficiently. It also allows to interface with baz.
+Homepage: http://foobar.org
+
+OASISFormat: 0.4
+BuildTools: ocamlbuild
+Plugins: META (0.4), DevFiles (0.4)
+
+Executable "sscm"
+  Path: src
+  MainIs: main.ml
+  CompiledObject: native
+  BuildDepends: core, threads
+
+
