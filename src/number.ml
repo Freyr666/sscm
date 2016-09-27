@@ -1,16 +1,19 @@
 exception Not_rational
 
+open Core.Std
+        
 module Number : sig
   type t =
     Integer of int
   | Rational of int * int
   | Float of float
   | Complex of float * float
-  val neg : t -> t
-  val sum : t -> t -> t
-  val sub : t -> t -> t
-  val mul : t -> t -> t
-  val div : t -> t -> t
+  val neg  : t -> t
+  val sum  : t -> t -> t
+  val sub  : t -> t -> t
+  val mul  : t -> t -> t
+  val div  : t -> t -> t
+  val show : t -> string
 end = struct
   
   type t = Integer  of int
@@ -18,15 +21,15 @@ end = struct
          | Float    of float
          | Complex  of float * float
 
-  let gcd a b =
+  let gcd_int a b =
     let rec gcd_rec a b =
       if b = 0 then a else gcd_rec b (a mod b)
     in gcd_rec (abs a) (abs b)
 
-  let lcm a b =
+  let lcm_int a b =
     match a, b with
     | 0, _ | _, 0 -> 0
-    | a, b -> abs (a * b) / (gcd a b)
+    | a, b -> abs (a * b) / (gcd_int a b)
                      
   let float_of_rat rat =
     match rat with
@@ -36,14 +39,14 @@ end = struct
   let rec simplify rat =
     match rat with
     | Rational (n, 1) -> Integer n
-    | Rational (n, d) -> let dv = gcd n d
+    | Rational (n, d) -> let dv = gcd_int n d
                          in simplify (Rational (n / dv, d / dv))
     | _ -> rat
 
   let neg x   =
     match x with
     | Integer x       -> Integer (-x)
-    | Rational (n, d) -> Rational (-n, d)  
+    | Rational (n, d) -> Rational (-n, d)
     | Float   x       -> Float (-.x)
     | Complex (r, i)  -> Complex (-.r, -.i)
                  
@@ -54,7 +57,7 @@ end = struct
     | (Rational (nx, dx), Rational (ny, dy)) ->
        if   dx = dy
        then simplify (Rational ((nx + ny), dx))
-       else let dxy = lcm dx dy in
+       else let dxy = lcm_int dx dy in
             let mx  = dxy / dx  in
             let my  = dxy / dy  in
             simplify (Rational (((mx * nx) + (my * ny)), dxy))
@@ -88,7 +91,7 @@ end = struct
     | (Rational (nx, dx), Rational (ny, dy)) ->
        if   dx = dy
        then simplify (Rational ((nx - ny), dx))
-       else let dxy = lcm dx dy in
+       else let dxy = lcm_int dx dy in
             let mx  = dxy / dx  in
             let my  = dxy / dy  in
             simplify (Rational (((mx * nx) - (my * ny)), dxy))
@@ -188,5 +191,13 @@ end = struct
        let (rc, ic) = (ry, -.iy) in
        let mx       = (float_of_rat x) in
        Complex ((mx *. rc) /. cmod, (mx *. ic) /. cmod)
+
+  let show x =
+    match x with
+    | Integer x -> string_of_int x
+    | Float   x -> string_of_float x
+    | Rational (n, d) -> (string_of_int n) ^ "/" ^ (string_of_int d)
+    | Complex  (r, i) -> (string_of_float r) ^ (if i >= 0. then "+" else "")
+                         ^ (string_of_float i) ^ "i"
     
 end;;
