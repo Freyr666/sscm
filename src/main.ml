@@ -1,11 +1,8 @@
 open Core.Std
 open Number
+open Object
+open Expressions
    
 let () =
-  let num1 = Number.Integer 1 in
-  let num2 = Number.Complex (1., 2.) in
-  let res  = Number.sub num1 num2 in
-  match res with
-  | Number.Complex (r, i) -> printf "Result: %f + %fi\n" r i
-  | _ -> printf "Error\n"
+  print_int (sum (Cons (Number (Number.Float 1.1), Number (Number.Float 2.1))))
 ;;
