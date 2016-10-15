@@ -8,7 +8,6 @@ module Number : sig
   | Rational of int * int
   | Float of float
   | Complex of float * float
-  val neg  : t -> t
   val sum  : t -> t -> t
   val sub  : t -> t -> t
   val mul  : t -> t -> t
@@ -42,13 +41,6 @@ end = struct
     | Rational (n, d) -> let dv = gcd_int n d
                          in simplify (Rational (n / dv, d / dv))
     | _ -> rat
-
-  let neg x   =
-    match x with
-    | Integer x       -> Integer (-x)
-    | Rational (n, d) -> Rational (-n, d)
-    | Float   x       -> Float (-.x)
-    | Complex (r, i)  -> Complex (-.r, -.i)
                  
   let sum x y =
     match (x, y) with
