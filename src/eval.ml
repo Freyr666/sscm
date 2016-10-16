@@ -3,10 +3,11 @@ open Expressions
 
 let apply fn args =
   match fn with
-  | "+" -> Expressions.sum args
-  | "-" -> Expressions.sub args
-  | "*" -> Expressions.mul args
-  | "/" -> Expressions.div args
+  | Add   -> Expressions.sum   args
+  | Sub   -> Expressions.sub   args
+  | Mul   -> Expressions.mul   args
+  | Div   -> Expressions.div   args
+  | Eq    -> Expressions.equal args
   | _ -> raise Wrong_exp_type
    
 let rec eval value =
@@ -17,9 +18,12 @@ let rec eval value =
   | Symbol  _
   | String  _
   | Cons    _ -> value
-  | List (Symbol "quote" :: tl)
+  | List (Symbol Quote :: tl)
     -> List tl
-  | List (Symbol "if" :: p :: exp1 :: exp2 :: [])
-    -> exp1
+  | List (Symbol If :: p :: exp1 :: exp2 :: [])
+    -> (match (eval p) with
+       | Boolean true  -> eval exp1
+       | Boolean false -> eval exp2
+       | _ -> raise Wrong_exp_type)
   | List (Symbol fn :: args) -> apply fn (List (List.map eval args))
   | _ -> raise Wrong_exp_type

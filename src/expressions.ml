@@ -2,12 +2,23 @@ exception Wrong_exp_type
 
 open Core.Std
 open Number
+
+type symb =
+  Symb of string      
+| If
+| Quote
+| Define
+| Add
+| Mul
+| Sub
+| Div
+| Eq
    
 type sexp =
   Nil
 | Number  of Number.t
 | Boolean of bool
-| Symbol  of string
+| Symbol  of symb
 | String  of string
 | Cons    of sexp * sexp
 | List    of sexp list
@@ -58,8 +69,17 @@ let rec eq arg1 arg2 =
      if (ha <> hb)
      then Boolean false
      else eq (List ta) (List tb)
-  | _ -> raise Wrong_exp_type
+  | _ -> Boolean false
 
+let equal args =
+  match args with
+  | List exps -> let res = List.reduce ~f:(fun x y -> eq x y)
+                                       exps
+                 in (match res with
+                     | Some x -> x
+                     | None -> Boolean true)
+  | _ -> raise Wrong_exp_type
+       
 let sum args =
   match args with
   | List exps -> let res = List.fold ~f:(fun x y -> Number.sum x y)
