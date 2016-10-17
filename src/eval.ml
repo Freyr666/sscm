@@ -22,7 +22,7 @@ let rec eval value =
   | Boolean _
   | Symbol  _
   | String  _
-  | Cons    _ -> value
+  | Dot     _ -> value
   | List (Symbol Quote :: tl :: [])
     -> tl
   | List (Symbol If :: p :: exp1 :: exp2 :: [])

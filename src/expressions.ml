@@ -25,7 +25,7 @@ type sexp =
 | Boolean of bool
 | Symbol  of symb
 | String  of string
-| Cons    of sexp * sexp
+| Dot     of sexp list * sexp
 | List    of sexp list
 
 let unpack_number = function
@@ -46,29 +46,32 @@ let rec eq arg1 arg2 =
   | _ -> Boolean false
        
 let car = function
-  | [Cons (hd, tl)] -> hd 
+  | [Dot ([], hd)]  -> hd
+  | [Dot (hd::_,_)] -> hd 
   | [List (hd::_)]  -> hd
   | _               -> raise Wrong_exp_type
                       
 let cdr = function
-  | [Cons (hd, tl)] -> tl
-  | [List (hd::tl)] -> List tl
-  | _               -> raise Wrong_exp_type
+  | [Dot ([],tl)]
+  | [Dot ([_],tl)]   -> tl
+  | [Dot (hd::tl,x)] -> Dot (tl,x)
+  | [List (hd::tl)]  -> List tl
+  | _                -> raise Wrong_exp_type
 
 let cons = function
   | [hd; List ls] -> List (hd::ls)
-  | [hd; Cons (hc, tc)] -> List (hd::hc::[tc])
-  | [hd; tl]      -> Cons (hd, tl)
+  | [hd; Dot (hc, tc)] -> Dot (hd::hc,tc)
+  | [hd; tl]      -> Dot ([hd], tl)
   | _             -> raise Wrong_exp_type
 
 let atomp = function
   | [List _]    -> Boolean false
-  | [Cons(_,_)] -> Boolean false
+  | [Dot(_,_)]  -> Boolean false
   | _           -> Boolean true
                     
 let pairp = function
   | [List _]     -> Boolean true
-  | [Cons(_,_)]  -> Boolean true
+  | [Dot(_,_)]   -> Boolean true
   | _            -> Boolean false
 
 let equal = function
