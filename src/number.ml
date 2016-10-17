@@ -8,11 +8,11 @@ module Number : sig
   | Rational of int * int
   | Float of float
   | Complex of float * float
-  val sum  : t -> t -> t
-  val sub  : t -> t -> t
-  val mul  : t -> t -> t
-  val div  : t -> t -> t
-  val show : t -> string
+  val sum              : t -> t -> t
+  val sub              : t -> t -> t
+  val mul              : t -> t -> t
+  val div              : t -> t -> t
+  val string_of_number : t -> string
 end = struct
   
   type t = Integer  of int
@@ -184,7 +184,7 @@ end = struct
        let mx       = (float_of_rat x) in
        Complex ((mx *. rc) /. cmod, (mx *. ic) /. cmod)
 
-  let show x =
+  let string_of_number x =
     match x with
     | Integer x -> string_of_int x
     | Float   x -> string_of_float x

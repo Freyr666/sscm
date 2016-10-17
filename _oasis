@@ -15,6 +15,6 @@ Executable "sscm"
   Path: src
   MainIs: main.ml
   CompiledObject: native
-  BuildDepends: core, threads
-
+  BuildDepends: core, threads, menhir
+  BuildTools+: ocamllex, menhir
 
