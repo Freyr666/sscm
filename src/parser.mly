@@ -1,63 +1,96 @@
+%{
+open Number;;
+open Expressions;;
+%}
+
 %token <int> INT
 %token <float> FLOAT
-%token <string> ID
+%token <string> SYMBOL
 %token <string> STRING
 %token TRUE
 %token FALSE
 %token NULL
-%token LEFT_BRACE
-%token RIGHT_BRACE
-%token LEFT_BRACK
-%token RIGHT_BRACK
-%token COLON
-%token COMMA
+%token LPAREN
+%token RPAREN
+%token QUOTE
+%token IF
+%token ADD
+%token MUL
+%token SUB
+%token DIV
+%token EQ
+%token CONS
+%token CAR
+%token CDR
+%token PAIRP
+%token LISTP
+%token ATOMP
+
+%token DOT
 %token EOF
-(* part 1 *)
-%start <Json.value option> prog
+
+%start <Expressions.sexp option> prog
 %%
-(* part 2 *)
+                             
 prog:
   | EOF       { None }
-  | v = value { Some v }
+  | s = sexp  { Some s }
   ;
 
-(* part 3 *)
-value:
-  | LEFT_BRACE; obj = object_fields; RIGHT_BRACE
-    { `Assoc obj }
-  | LEFT_BRACK; vl = array_values; RIGHT_BRACK
-    { `List vl }
+sexp:
+  | LPAREN; sl = list_sexp; RPAREN
+          { List sl }
+  | LPAREN; sl = list_sexp; DOT; s = sexp; RPAREN
+          { Dot (sl, s) }
+  | QUOTE
+          { Symbol Quote }
+  | IF
+          { Symbol If }
+  | ADD
+          { Symbol Add }
+  | MUL
+          { Symbol Mul }
+  | SUB
+          { Symbol Sub }
+  | DIV
+          { Symbol Expressions.Div }
+  | EQ
+          { Symbol Eq }
+  | CONS
+          { Symbol Cons }
+  | CAR
+          { Symbol Car }
+  | CDR
+          { Symbol Cdr }
+  | PAIRP
+          { Symbol Pairp }
+  | ATOMP
+          { Symbol Atomp }
+  | LISTP
+          { Symbol Listp }
+  | s = SYMBOL
+          { Expressions.Symbol (Expressions.Symb s) }
   | s = STRING
-    { `String s }
+          { Expressions.String s }
   | i = INT
-    { `Int i }
+    { Expressions.Number (Number.Integer i) }
   | x = FLOAT
-    { `Float x }
+    { Expressions.Number (Number.Float x) }
   | TRUE
-    { `Bool true }
+    { Expressions.Boolean true }
   | FALSE
-    { `Bool false }
+    { Expressions.Boolean false }
   | NULL
-    { `Null }
+    { Expressions.List [] }
   ;
 
-(* part 4 *)
-object_fields: obj = rev_object_fields { List.rev obj };
-
-rev_object_fields:
+list_sexp:
   | (* empty *) { [] }
-  | obj = rev_object_fields; COMMA; k = ID; COLON; v = value
-    { (k, v) :: obj }
+  | sl = rev_vals { List.rev sl }
   ;
 
-(* part 5 *)
-array_values:
-  | (* empty *) { [] }
-  | vl = rev_values { List.rev vl }
-  ;
-
-rev_values:
-  | v = value { [v] }
-  | vl = rev_values; COMMA; v = value
-    { v :: vl }
+rev_vals:
+  | s = sexp { [s] }
+  | sl = rev_vals; s = sexp
+    { s :: sl }
   ;

@@ -12,41 +12,47 @@ let next_line lexbuf =
     }
 }
 
-(* part 1 *)
 let int = '-'? ['0'-'9'] ['0'-'9']*
-
-(* part 2 *)
 let digit = ['0'-'9']
-let frac = '.' digit*
-let exp = ['e' 'E'] ['-' '+']? digit+
-let float = digit* frac? exp?
+let frac = '.' digit*             
+let float = digit* frac?
 
-(* part 3 *)
 let white = [' ' '\t']+
 let newline = '\r' | '\n' | "\r\n"
-let id = ['a'-'z' 'A'-'Z' '_'] ['a'-'z' 'A'-'Z' '0'-'9' '_']*
-
-(* part 4 *)
+let text = ['a'-'z' 'A'-'Z' '_'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-' '?']*
+             
+let eq = "eq?" | "equal?"
+             
 rule read =
   parse
-  | white    { read lexbuf }
-  | newline  { next_line lexbuf; read lexbuf }
-  | int      { INT (int_of_string (Lexing.lexeme lexbuf)) }
-  | float    { FLOAT (float_of_string (Lexing.lexeme lexbuf)) }
-  | "true"   { TRUE }
-  | "false"  { FALSE }
-  | "null"   { NULL }
-  | '"'      { read_string (Buffer.create 17) lexbuf }
-  | '{'      { LEFT_BRACE }
-  | '}'      { RIGHT_BRACE }
-  | '['      { LEFT_BRACK }
-  | ']'      { RIGHT_BRACK }
-  | ':'      { COLON }
-  | ','      { COMMA }
+  | white     { read lexbuf }
+  | newline   { next_line lexbuf; read lexbuf }
+  | int       { INT (int_of_string (Lexing.lexeme lexbuf)) }
+  | float     { FLOAT (float_of_string (Lexing.lexeme lexbuf)) }
+  | "true"    { TRUE }
+  | "false"   { FALSE }
+  | "null"    { NULL }
+  | '('       { LPAREN }
+  | ')'       { RPAREN }
+  | " . "     { DOT }
+  | "quote"   { QUOTE }
+  | "if"      { IF }
+  | "+"       { ADD }
+  | "*"       { MUL }
+  | "-"       { SUB }
+  | "/"       { DIV }
+  | eq        { EQ }
+  | "cons"    { CONS }
+  | "car"     { CAR }
+  | "cdr"     { CDR }
+  | "pair?"   { PAIRP }
+  | "list?"   { LISTP }
+  | "atom?"   { ATOMP }
+  | '"'       { read_string (Buffer.create 17) lexbuf }
+  | text as s { SYMBOL s }
   | _ { raise (SyntaxError ("Unexpected char: " ^ Lexing.lexeme lexbuf)) }
   | eof      { EOF }
 
-(* part 5 *)
 and read_string buf =
   parse
   | '"'       { STRING (Buffer.contents buf) }

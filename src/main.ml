@@ -3,22 +3,25 @@ open Number
 open Expressions
 open Eval
 open Print
-(**open Lexer
-open Lexing*)
+open Lexer
+open Lexing
 open Env
 open Closure
 
 let () =
-  let test = {args = ["x"];
-              env  = Env_empty;
-              body = List [Symbol Add;
-                           Symbol (Symb "x");
-                           Number (Number.Float 0.5);
-                           Number (Number.Complex (1.1, 2.3));
-                           Number (Number.Integer 0)]} in
-  let envi = new_env Env_empty in
-  let _    = set_var envi "fun" (Proc test) in
-  let texp = List [Symbol (Symb "fun"); Number (Number.Float 0.5)] in
-  print_exp (eval texp envi)
+  let lexbuf = Lexing.from_string "(if (eq? (cdr (quote (3 2))) (+ 1 2)) \"yes\" \"no\")" in
+  match Parser.prog Lexer.read lexbuf with
+  | Some sexp -> (print_exp sexp;
+                  print_exp (eval sexp Env_empty))
+  | None -> ()
+(*   let test = {args = ["x"]; *)
+(*               env  = Env_empty; *)
+(*               body = List [Symbol Div; *)
+(*                            Number (Number.Integer 1); *)
+(*                            Number (Number.Integer 1)]} in *)
+(*   let envi = new_env Env_empty in *)
+(*   let _    = set_var envi "fun" (Proc test) in *)
+(*   let texp = List [Symbol (Symb "fun"); Number (Number.Float 0.5)] in *)
+(* print_exp (eval texp envi) "(if (eq? 2 (cdr (4 . 2))) (/ 1 2) 5)"*)
   
 ;;
