@@ -3,21 +3,23 @@ open Number
 open Core.Std
 
 let string_of_symbol = function
-  | Symb s -> s
-  | If     -> "if"
-  | Quote  -> "quote"
-  | Add    -> "+"
-  | Mul    -> "*"
-  | Sub    -> "-"
-  | Div    -> "/"
-  | Eq     -> "equal?"
-  | Cons   -> "cons"
-  | Car    -> "car"
-  | Cdr    -> "cdr"
-  | Pairp  -> "pair?"
-  | Atomp  -> "atom?"
-  | Listp  -> "list?"
-  | Define -> "define"
+  | Symb s    -> s
+  | If        -> "if"
+  | Quote     -> "quote"
+  | Add       -> "+"
+  | Mul       -> "*"
+  | Sub       -> "-"
+  | Div       -> "/"
+  | Eq        -> "equal?"
+  | Cons      -> "cons"
+  | Car       -> "car"
+  | Cdr       -> "cdr"
+  | Pairp     -> "pair?"
+  | Atomp     -> "atom?"
+  | Listp     -> "list?"
+  | Define    -> "define"
+  | Let       -> "let"
+  | Tail_call -> "TAIL CALL:OPTIMISED OUT"
    
 let rec string_of_exp = function
   | Boolean true   -> "#t"

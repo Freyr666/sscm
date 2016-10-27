@@ -14,6 +14,7 @@ open Expressions;;
 %token RPAREN
 %token QUOTE
 %token IF
+%token LET
 %token ADD
 %token MUL
 %token SUB
@@ -46,6 +47,8 @@ sexp:
           { Symbol Quote }
   | IF
           { Symbol If }
+  | LET
+          { Symbol Let }
   | ADD
           { Symbol Add }
   | MUL
@@ -53,7 +56,7 @@ sexp:
   | SUB
           { Symbol Sub }
   | DIV
-          { Symbol Expressions.Div }
+          { Symbol Div }
   | EQ
           { Symbol Eq }
   | CONS
@@ -69,19 +72,19 @@ sexp:
   | LISTP
           { Symbol Listp }
   | s = SYMBOL
-          { Expressions.Symbol (Expressions.Symb s) }
+          { Symbol (Symb s) }
   | s = STRING
-          { Expressions.String s }
+          { String s }
   | i = INT
-    { Expressions.Number (Number.Integer i) }
+    { Number (Number.Integer i) }
   | x = FLOAT
-    { Expressions.Number (Number.Float x) }
+    { Number (Number.Float x) }
   | TRUE
-    { Expressions.Boolean true }
+    { Boolean true }
   | FALSE
-    { Expressions.Boolean false }
+    { Boolean false }
   | NULL
-    { Expressions.List [] }
+    { List [] }
   ;
 
 list_sexp:

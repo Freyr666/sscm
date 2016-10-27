@@ -9,7 +9,7 @@ open Env
 open Closure
 
 let () =
-  let lexbuf = Lexing.from_string "(if (eq? (cdr (quote (3 2))) (+ 1 2)) \"yes\" \"no\")" in
+  let lexbuf = Lexing.from_string "( / 5 3)" in
   match Parser.prog Lexer.read lexbuf with
   | Some sexp -> (print_exp sexp;
                   print_exp (eval sexp Env_empty))

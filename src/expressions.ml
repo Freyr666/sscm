@@ -4,10 +4,12 @@ open Core.Std
 open Number
 
 type symb =
-  Symb of string      
+  Symb of string
+| Tail_call
 | If
 | Quote
 | Define
+| Let
 | Add
 | Mul
 | Sub

@@ -16,5 +16,5 @@ Executable "sscm"
   MainIs: main.ml
   CompiledObject: native
   BuildDepends: core, threads, menhir
-  BuildTools+: ocamllex, menhir
-
+  BuildTools+: menhir
+  NativeOpt: -O3 -unbox-closures

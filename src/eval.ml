@@ -24,29 +24,35 @@ let rec eval value env =
        | Boolean true  -> eval exp1 env
        | Boolean false -> eval exp2 env
        | _ -> raise Wrong_exp_type)
-  | List (Symbol fn :: args) -> apply fn
-                                      (List.map args ~f:(fun arg -> eval arg env))
-                                      env
+  | List (Symbol Let :: List binds :: body)
+    -> bind_eval binds body env
+  | List (Symbol Tail_call :: args)
+    -> List (Symbol Tail_call :: (List.map args
+                                           ~f:(fun arg -> eval arg env)))
+  | List (Symbol fn :: args)
+    -> apply fn
+             (List.map args ~f:(fun arg -> eval arg env))
+             env
   | _ -> raise Wrong_exp_type
 
 and apply fn args env =
   match fn with
-  | Add    -> Expressions.sum   args
-  | Sub    -> Expressions.sub   args
-  | Mul    -> Expressions.mul   args
-  | Div    -> Expressions.div   args
-  | Eq     -> Expressions.equal args
-  | Cons   -> Expressions.cons  args
-  | Car    -> Expressions.car   args
-  | Cdr    -> Expressions.cdr   args
+  | Add       -> Expressions.sum   args
+  | Sub       -> Expressions.sub   args
+  | Mul       -> Expressions.mul   args
+  | Div       -> Expressions.div   args
+  | Eq        -> Expressions.equal args
+  | Cons      -> Expressions.cons  args
+  | Car       -> Expressions.car   args
+  | Cdr       -> Expressions.cdr   args
   | Pairp
-  | Listp  -> Expressions.pairp args
-  | Atomp  -> Expressions.atomp args
-  | Symb s -> let proc = lookup env s in
-              (match proc with
-               | Some (Var _)    -> raise Wrong_exp_type
-               | Some (Proc cls) -> call cls args env
-               | None   -> raise Wrong_exp_type)
+  | Listp     -> Expressions.pairp args
+  | Atomp     -> Expressions.atomp args
+  | Symb s    -> let proc = lookup env s in
+                 (match proc with
+                  | Some (Var _)    -> raise Wrong_exp_type
+                  | Some (Proc cls) -> call cls args env
+                  | None   -> raise Wrong_exp_type)
   | _ -> raise Wrong_exp_type
 
 and call cls args env =
@@ -56,5 +62,21 @@ and call cls args env =
                                ~f:(fun sb vl ->
                                  set_var arg_env sb (Var vl)) in
   eval cls.body arg_env
+
+and bind_eval bindings body env =
+  if List.is_empty body
+  then raise Wrong_exp_type
+  else 
+    let nenv = new_env env in
+    let _    = List.iter
+                 ~f:(fun bnd ->
+                   match bnd with
+                   | List [Symbol (Symb s); v] -> set_var nenv s (Var (eval v nenv))
+                   | _                         -> raise Wrong_exp_type)
+                 bindings in
+    List.fold
+      ~init:(List [])
+      ~f:(fun acc b -> eval b nenv)
+      body
 
 ;;

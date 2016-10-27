@@ -39,7 +39,9 @@ end = struct
     match rat with
     | Rational (n, 1) -> Integer n
     | Rational (n, d) -> let dv = gcd_int n d
-                         in simplify (Rational (n / dv, d / dv))
+                         in if dv = 1
+                            then rat
+                            else simplify (Rational (n / dv, d / dv))
     | _ -> rat
                  
   let sum x y =

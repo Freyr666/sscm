@@ -27,7 +27,7 @@ rule read =
   parse
   | white     { read lexbuf }
   | newline   { next_line lexbuf; read lexbuf }
-  | int       { INT (int_of_string (Lexing.lexeme lexbuf)) }
+  | int       { INT   (int_of_string (Lexing.lexeme lexbuf)) }
   | float     { FLOAT (float_of_string (Lexing.lexeme lexbuf)) }
   | "true"    { TRUE }
   | "false"   { FALSE }
@@ -37,6 +37,7 @@ rule read =
   | " . "     { DOT }
   | "quote"   { QUOTE }
   | "if"      { IF }
+  | "let"     { LET }
   | "+"       { ADD }
   | "*"       { MUL }
   | "-"       { SUB }
