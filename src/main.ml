@@ -9,7 +9,7 @@ open Env
 open Closure
 
 let () =
-  let lexbuf = Lexing.from_string "( / 5 3)" in
+  let lexbuf = Lexing.from_string "(let ((x 12) (y 0.3)) (/ y x))" in
   match Parser.prog Lexer.read lexbuf with
   | Some sexp -> (print_exp sexp;
                   print_exp (eval sexp Env_empty))

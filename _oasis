@@ -15,6 +15,6 @@ Executable "sscm"
   Path: src
   MainIs: main.ml
   CompiledObject: native
-  BuildDepends: core, threads, menhir
-  BuildTools+: menhir
+  BuildDepends: core, threads
+  BuildTools+: ocamllex
   NativeOpt: -O3 -unbox-closures

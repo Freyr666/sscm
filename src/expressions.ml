@@ -102,9 +102,10 @@ let sub = function
             in Number res
 
 let div = function
-    exps -> let res = List.fold ~f:(fun x y -> Number.div x y)
-                                ~init:(Number.Integer 1)
-                                (List.map exps (fun x -> unpack_number x))
-            in Number res
+    exps -> let res = List.reduce ~f:(fun x y -> Number.div x y)
+                                  (List.map exps (fun x -> unpack_number x))
+            in match res with
+               | Some n -> Number n
+               | None -> raise Wrong_exp_type
        
 ;;
