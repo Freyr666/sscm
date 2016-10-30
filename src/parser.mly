@@ -17,6 +17,7 @@ open Expressions;;
 %token QUOTE
 %token IF
 %token LET
+%token LAMBDA
 %token ADD
 %token MUL
 %token SUB
@@ -51,6 +52,8 @@ sexp:
           { Symbol If }
   | LET
           { Symbol Let }
+  | LAMBDA
+          { Symbol Lambda }
   | ADD
           { Symbol Add }
   | MUL

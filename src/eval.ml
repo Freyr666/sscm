@@ -11,6 +11,11 @@ let rec eval value env =
   | Boolean _
   | String  _
   | Dot     _ -> value
+  | List (List h :: tl) ->
+     let new_lst = List ( (eval (List h) env) ::
+                          (List.map tl
+                                    ~f:(fun arg -> eval arg env))) in
+     eval new_lst env
   | Symbol (Symb s) -> let var = lookup env s in
                        (match var with
                         | Some v -> v
@@ -22,12 +27,16 @@ let rec eval value env =
     -> (match (eval p env) with
        | Boolean true  -> eval exp1 env
        | Boolean false -> eval exp2 env
-       | _ -> raise Wrong_exp_type)
-  | List (Symbol Let :: List binds :: body)
-    -> bind_eval binds body env
+       | _ -> raise Wrong_exp_type)  
   | List (Symbol Tail_call :: args)
     -> List (Symbol Tail_call :: (List.map args
                                            ~f:(fun arg -> eval arg env)))
+  | List (Symbol Let :: List binds :: body)
+    -> bind_eval binds body env
+  | List (Symbol Lambda :: List args :: body)
+    -> Closure (make_closure args body env)
+  | List (Closure cls :: args)
+    -> call cls args env
   | List (Symbol fn :: args)
     -> apply fn
              (List.map args ~f:(fun arg -> eval arg env))
@@ -60,7 +69,10 @@ and call cls args env =
                                args
                                ~f:(fun sb vl ->
                                  set_var arg_env sb vl) in
-  eval cls.body arg_env
+  List.fold
+    ~init:(List [])
+    ~f:(fun acc e -> eval e arg_env)
+    cls.body
 
 and bind_eval bindings body env =
   if List.is_empty body

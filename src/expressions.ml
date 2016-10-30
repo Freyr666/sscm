@@ -34,20 +34,17 @@ type sexp =
 | Closure of closure
 and closure = {args : string list;
                env  : sexp env_type;
-               body : sexp;}
+               body : sexp list;}
              
-let make_closure args env =
-  match args with
-  | [(List vars); body] ->
-      let vars      = List.map vars
-                               ~f:(fun x ->
-                                 match x with
-                                 | Symbol Symb s -> s
-                                 | _             -> raise Wrong_exp_type) in
-      {args = vars;
-       env  = env;
-       body = body;} 
-  | _                   -> raise Wrong_exp_type
+let make_closure vars body env =
+  let vars      = List.map vars
+                           ~f:(fun x ->
+                             match x with
+                             | Symbol Symb s -> s
+                             | _             -> raise Wrong_exp_type) in
+  {args = vars;
+   env  = env;
+   body = body;} 
            
 let unpack_number = function
   | Number n -> n
@@ -115,16 +112,17 @@ let mul = function
             in Number res
 
 let sub = function
-    exps -> let res = List.fold ~f:(fun x y -> Number.sub x y)
-                                ~init:(Number.Integer 0)
-                                (List.map exps (fun x -> unpack_number x))
-            in Number res
+    exps -> let res = List.reduce ~f:(fun x y -> Number.sub x y)
+                                  (List.map exps (fun x -> unpack_number x))
+            in match res with
+               | Some n -> Number n
+               | None   -> raise Wrong_exp_type
 
 let div = function
     exps -> let res = List.reduce ~f:(fun x y -> Number.div x y)
                                   (List.map exps (fun x -> unpack_number x))
             in match res with
                | Some n -> Number n
-               | None -> raise Wrong_exp_type
+               | None   -> raise Wrong_exp_type
        
 ;;

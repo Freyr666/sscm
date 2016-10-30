@@ -9,7 +9,7 @@ open Env
 
    
 let () =
-  let lexbuf = Lexing.from_string "(let ((x 1/2) (y -3.+.2i)) (/ y x))" in
+  let lexbuf = Lexing.from_string "(let ((f (lambda (x) (+ x 1) (- x 2)))) (f (/ 1 3)))" in
   match Parser.prog Lexer.read lexbuf with
   | Some sexp -> (print_exp sexp;
                   print_exp (eval sexp Env_empty))

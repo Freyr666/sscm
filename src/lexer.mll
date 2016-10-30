@@ -41,7 +41,7 @@ let float = digit* frac?
 let ratio = digit+ '/' digit+
 let aod = '+' | '-'
 let im  = aod float 'i'  
-let complex = '-'? float im?                                     
+let complex = '-'? float? im                                     
 
 let white = [' ' '\t']+
 let newline = '\r' | '\n' | "\r\n"
@@ -66,6 +66,7 @@ rule read =
   | "quote"   { QUOTE }
   | "if"      { IF }
   | "let"     { LET }
+  | "lambda"  { LAMBDA }
   | "+"       { ADD }
   | "*"       { MUL }
   | "-"       { SUB }
