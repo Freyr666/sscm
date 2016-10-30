@@ -1,4 +1,5 @@
 {
+open Core.Std
 open Lexing
 open Parser
 
@@ -10,12 +11,37 @@ let next_line lexbuf =
     { pos with pos_bol = lexbuf.lex_curr_pos;
                pos_lnum = pos.pos_lnum + 1
     }
+
+let ratio_of_string str =
+  match (String.split ~on:'/' str) with
+  | [a;  b] -> ((int_of_string a), (int_of_string b))
+  | _ -> raise (SyntaxError ("not a ratio: " ^ str))
+
+let complex_of_string str =
+  let stri = String.drop_suffix str 1 in
+  match (String.split ~on:'+' stri) with
+  | [""; _]
+  | [_] ->
+     (match (String.split ~on:'-' stri) with
+      | [""; a; b] -> ((-. (float_of_string a)),
+                       (-. (float_of_string b)))
+      | [a; b]     -> ((float_of_string a),
+                       (-. (float_of_string b)))
+      | _ -> raise (SyntaxError ("not a complex: " ^ str)))
+  | [a; b] -> ((float_of_string a),
+               (float_of_string b))
+  | _ -> raise (SyntaxError ("not a complex: " ^ str))
+       
 }
 
 let int = '-'? ['0'-'9'] ['0'-'9']*
 let digit = ['0'-'9']
 let frac = '.' digit*             
 let float = digit* frac?
+let ratio = digit+ '/' digit+
+let aod = '+' | '-'
+let im  = aod float 'i'  
+let complex = '-'? float im?                                     
 
 let white = [' ' '\t']+
 let newline = '\r' | '\n' | "\r\n"
@@ -29,6 +55,8 @@ rule read =
   | newline   { next_line lexbuf; read lexbuf }
   | int       { INT   (int_of_string (Lexing.lexeme lexbuf)) }
   | float     { FLOAT (float_of_string (Lexing.lexeme lexbuf)) }
+  | ratio     { RATIO (ratio_of_string (Lexing.lexeme lexbuf)) }
+  | complex   { COMPLEX (complex_of_string (Lexing.lexeme lexbuf)) }
   | "true"    { TRUE }
   | "false"   { FALSE }
   | "null"    { NULL }

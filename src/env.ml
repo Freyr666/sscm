@@ -1,4 +1,5 @@
-open Expressions
+exception Wrong_exp_type
+
 open Core.Std
 
 module Scheme_env = Hashtbl.Make(String)

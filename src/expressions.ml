@@ -2,6 +2,7 @@ exception Wrong_exp_type
 
 open Core.Std
 open Number
+open Env
 
 type symb =
   Symb of string
@@ -9,6 +10,7 @@ type symb =
 | If
 | Quote
 | Define
+| Lambda
 | Let
 | Add
 | Mul
@@ -21,7 +23,7 @@ type symb =
 | Pairp
 | Listp
 | Atomp
-   
+
 type sexp =
   Number  of Number.t
 | Boolean of bool
@@ -29,7 +31,24 @@ type sexp =
 | String  of string
 | Dot     of sexp list * sexp
 | List    of sexp list
-
+| Closure of closure
+and closure = {args : string list;
+               env  : sexp env_type;
+               body : sexp;}
+             
+let make_closure args env =
+  match args with
+  | [(List vars); body] ->
+      let vars      = List.map vars
+                               ~f:(fun x ->
+                                 match x with
+                                 | Symbol Symb s -> s
+                                 | _             -> raise Wrong_exp_type) in
+      {args = vars;
+       env  = env;
+       body = body;} 
+  | _                   -> raise Wrong_exp_type
+           
 let unpack_number = function
   | Number n -> n
   | _ -> raise Wrong_exp_type

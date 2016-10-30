@@ -1,7 +1,6 @@
 open Number
 open Expressions
 open Env
-open Closure
 open Print
 
 open Core.Std
@@ -14,8 +13,8 @@ let rec eval value env =
   | Dot     _ -> value
   | Symbol (Symb s) -> let var = lookup env s in
                        (match var with
-                        | Some (Var v) -> v
-                        | _            -> raise Wrong_exp_type)
+                        | Some v -> v
+                        | _      -> raise Wrong_exp_type)
   | Symbol _ -> value
   | List (Symbol Quote :: tl :: [])
     -> tl
@@ -50,9 +49,9 @@ and apply fn args env =
   | Atomp     -> Expressions.atomp args
   | Symb s    -> let proc = lookup env s in
                  (match proc with
-                  | Some (Var _)    -> raise Wrong_exp_type
-                  | Some (Proc cls) -> call cls args env
-                  | None   -> raise Wrong_exp_type)
+                  | Some (Closure cls) -> call cls args env
+                  | Some _ 
+                  | None  -> raise Wrong_exp_type)
   | _ -> raise Wrong_exp_type
 
 and call cls args env =
@@ -60,7 +59,7 @@ and call cls args env =
   let _       = List.iter2_exn cls.args
                                args
                                ~f:(fun sb vl ->
-                                 set_var arg_env sb (Var vl)) in
+                                 set_var arg_env sb vl) in
   eval cls.body arg_env
 
 and bind_eval bindings body env =
@@ -71,7 +70,7 @@ and bind_eval bindings body env =
     let _    = List.iter
                  ~f:(fun bnd ->
                    match bnd with
-                   | List [Symbol (Symb s); v] -> set_var nenv s (Var (eval v nenv))
+                   | List [Symbol (Symb s); v] -> set_var nenv s (eval v nenv)
                    | _                         -> raise Wrong_exp_type)
                  bindings in
     List.fold

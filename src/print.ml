@@ -18,6 +18,7 @@ let string_of_symbol = function
   | Atomp     -> "atom?"
   | Listp     -> "list?"
   | Define    -> "define"
+  | Lambda    -> "lambda"
   | Let       -> "let"
   | Tail_call -> "TAIL CALL:OPTIMISED OUT"
    
@@ -40,5 +41,6 @@ let rec string_of_exp = function
                       in (match cont with
                           | Some s -> "(" ^ s ^ " . " ^ last ^ ")"
                           | None   -> last)
+  | Closure _      -> "<PROCEDURE>"
 
 let print_exp = Fn.compose print_endline string_of_exp

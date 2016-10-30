@@ -6,10 +6,10 @@ open Print
 open Lexer
 open Lexing
 open Env
-open Closure
 
+   
 let () =
-  let lexbuf = Lexing.from_string "(let ((x 12) (y 0.3)) (/ y x))" in
+  let lexbuf = Lexing.from_string "(let ((x 1/2) (y -3.+.2i)) (/ y x))" in
   match Parser.prog Lexer.read lexbuf with
   | Some sexp -> (print_exp sexp;
                   print_exp (eval sexp Env_empty))
@@ -17,7 +17,7 @@ let () =
 (*   let test = {args = ["x"]; *)
 (*               env  = Env_empty; *)
 (*               body = List [Symbol Div; *)
-(*                            Number (Number.Integer 1); *)
+(*                            Number (Number.Rational 1); *)
 (*                            Number (Number.Integer 1)]} in *)
 (*   let envi = new_env Env_empty in *)
 (*   let _    = set_var envi "fun" (Proc test) in *)

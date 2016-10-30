@@ -5,6 +5,8 @@ open Expressions;;
 
 %token <int> INT
 %token <float> FLOAT
+%token <int*int> RATIO
+%token <float*float> COMPLEX
 %token <string> SYMBOL
 %token <string> STRING
 %token TRUE
@@ -74,11 +76,15 @@ sexp:
   | s = SYMBOL
           { Symbol (Symb s) }
   | s = STRING
-          { String s }
+          { String s }	  
   | i = INT
     { Number (Number.Integer i) }
   | x = FLOAT
     { Number (Number.Float x) }
+  | r = RATIO
+    { let (d,n) = r in Number (Number.Rational (d,n)) }
+  | c = COMPLEX
+    { let (r,i) = c in Number (Number.Complex (r,i)) }
   | TRUE
     { Boolean true }
   | FALSE

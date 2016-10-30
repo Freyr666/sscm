@@ -191,7 +191,8 @@ end = struct
     | Integer x -> string_of_int x
     | Float   x -> string_of_float x
     | Rational (n, d) -> (string_of_int n) ^ "/" ^ (string_of_int d)
-    | Complex  (r, i) -> (string_of_float r) ^ (if i >= 0. then "+" else "")
+    | Complex  (r, i) -> (string_of_float r)
+                         ^ (if i >= 0. then "+" else "")
                          ^ (string_of_float i) ^ "i"
     
 end;;
