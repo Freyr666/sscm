@@ -35,6 +35,8 @@ let rec eval value env =
     -> bind_eval binds body env
   | List (Symbol Lambda :: List args :: body)
     -> Closure (make_closure args body env)
+  | List (Symbol Define :: def :: exps)
+    -> define def exps env
   | List (Closure cls :: args)
     -> call cls args env
   | List (Symbol fn :: args)
@@ -82,12 +84,44 @@ and bind_eval bindings body env =
     let _    = List.iter
                  ~f:(fun bnd ->
                    match bnd with
-                   | List [Symbol (Symb s); v] -> set_var nenv s (eval v nenv)
-                   | _                         -> raise Wrong_exp_type)
+                   | List [Symbol (Symb s); v]
+                     -> let e = eval v nenv in
+                        (match e with
+                         | Closure c -> set_var nenv s (Closure (optimise_cls s c))
+                         | _         -> set_var nenv s e)
+                   | _
+                     -> raise Wrong_exp_type)
                  bindings in
     List.fold
       ~init:(List [])
       ~f:(fun acc b -> eval b nenv)
       body
+
+and define def exps env =
+  match (def,exps) with
+  | (Symbol Symb s, [exp])
+    -> let e = eval exp env in
+       let _ = (match e with
+                | Closure c -> set_var env s (Closure (optimise_cls s c))
+                | _         -> set_var env s e) in
+       List []
+  | (List (Symbol Symb f :: args), body)
+    -> let _ = set_var env f (Closure
+                                (optimise_cls f
+                                              (make_closure args body env))) in
+       List []
+  | _ -> raise Wrong_exp_type
+
+and optimise_cls name cls =
+  { cls
+  with body =
+         List.map ~f:(fun e ->
+                    match e with
+                    | List (Symbol If :: List (Symbol Symb name :: args) :: exp :: [])
+                      -> List (Symbol If :: List (Symbol Tail_call :: args) :: exp :: [])
+                    | List (Symbol If :: exp :: List (Symbol Symb name :: args) :: [])
+                      -> List (Symbol If :: exp :: List (Symbol Tail_call :: args) :: [])
+                    | _ -> e)
+                  cls.body }
 
 ;;

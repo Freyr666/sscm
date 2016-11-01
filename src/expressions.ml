@@ -37,11 +37,11 @@ and closure = {args : string list;
                body : sexp list;}
              
 let make_closure vars body env =
-  let vars      = List.map vars
-                           ~f:(fun x ->
-                             match x with
-                             | Symbol Symb s -> s
-                             | _             -> raise Wrong_exp_type) in
+  let vars          = List.map vars
+                               ~f:(fun x ->
+                                 match x with
+                                 | Symbol Symb s -> s
+                                 | _             -> raise Wrong_exp_type) in
   {args = vars;
    env  = env;
    body = body;} 

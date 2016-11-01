@@ -67,6 +67,7 @@ rule read =
   | "if"      { IF }
   | "let"     { LET }
   | "lambda"  { LAMBDA }
+  | "define"  { DEFINE }
   | "+"       { ADD }
   | "*"       { MUL }
   | "-"       { SUB }
