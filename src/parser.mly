@@ -30,9 +30,10 @@ open Expressions;;
 %token PAIRP
 %token LISTP
 %token ATOMP
-
 %token DOT
+
 %token EOF
+%token EOL
 
 %start <Expressions.sexp option> prog
 %%

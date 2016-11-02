@@ -113,15 +113,13 @@ and define def exps env =
   | _ -> raise Wrong_exp_type
 
 and optimise_cls name cls =
-  { cls
-  with body =
-         List.map ~f:(fun e ->
-                    match e with
-                    | List (Symbol If :: List (Symbol Symb name :: args) :: exp :: [])
-                      -> List (Symbol If :: List (Symbol Tail_call :: args) :: exp :: [])
-                    | List (Symbol If :: exp :: List (Symbol Symb name :: args) :: [])
-                      -> List (Symbol If :: exp :: List (Symbol Tail_call :: args) :: [])
-                    | _ -> e)
-                  cls.body }
+  let rec opt_body = function
+    | List (Symbol Symb name :: args) -> List (Symbol Tail_call :: args)
+    | List (Symbol If :: exp1 :: exp2 :: [])
+      -> List (Symbol If :: (opt_body exp1) :: (opt_body exp2) :: [])
+    | exp -> exp
+  in { cls
+     with body = List.map ~f:opt_body
+                          cls.body }
 
 ;;

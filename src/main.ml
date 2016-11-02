@@ -1,26 +1,26 @@
 open Core.Std
-open Number
 open Expressions
 open Eval
+open Read
 open Print
-open Lexer
-open Lexing
 open Env
 
    
 let () =
-  let lexbuf = Lexing.from_string "(let ((f    (lambda (x) (+ x 1)))
-                                         (lst  (quote (1 2 3))))
-                                      (define (map fun acc l)
-                                         (if (eq? l (quote ()))
-                                           acc
-                                           (map fun 
-                                                (cons (fun (car l)) acc)
-                                                (cdr l)))) 
-                                      (map f (quote ()) lst))" in
-  match Parser.prog Lexer.read lexbuf with
-  | Some sexp -> (print_exp sexp;
-                  print_exp (eval sexp Env_empty))
-  | None -> ()
+
+  let input = In_channel.stdin in
+  let env   = new_env Env_empty in
+  
+  let rec promt str in_chan env =
+    let s  = str ^ (input_line in_chan) in
+    let e  = Read.read s in
+    match e with
+    | Some sexp -> let _   = (print_string "=> ";
+                              print_exp (eval sexp env)) in
+                   promt "" in_chan env
+    | None      -> promt s  in_chan env
+  in
+
+  promt "" input env 
   
 ;;
