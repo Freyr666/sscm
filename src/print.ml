@@ -6,6 +6,9 @@ let string_of_symbol = function
   | Symb s    -> s
   | If        -> "if"
   | Quote     -> "quote"
+  | Not       -> "not"
+  | And       -> "and"
+  | Or        -> "or"
   | Add       -> "+"
   | Mul       -> "*"
   | Sub       -> "-"
@@ -17,6 +20,7 @@ let string_of_symbol = function
   | Pairp     -> "pair?"
   | Atomp     -> "atom?"
   | Listp     -> "list?"
+  | Nullp     -> "null?"
   | Define    -> "define"
   | Lambda    -> "lambda"
   | Let       -> "let"

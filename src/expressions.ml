@@ -12,6 +12,9 @@ type symb =
 | Define
 | Lambda
 | Let
+| Not
+| And
+| Or
 | Add
 | Mul
 | Sub
@@ -23,6 +26,7 @@ type symb =
 | Pairp
 | Listp
 | Atomp
+| Nullp
 
 type sexp =
   Number  of Number.t
@@ -92,6 +96,37 @@ let pairp = function
   | [Dot(_,_)]   -> Boolean true
   | _            -> Boolean false
 
+let nullp = function
+  | [List []]    -> Boolean true
+  | _            -> Boolean false
+
+let l_not = function
+  | [List []]       -> Boolean true
+  | [Boolean false] -> Boolean true
+  | _               -> Boolean false
+                 
+let l_or  = function
+    exps -> let res = List.find ~f:(fun e ->
+                                  match e with
+                                  | List []       -> false
+                                  | Boolean false -> false
+                                  | _             -> true)
+                                exps
+            in (match res with
+                | Some _ -> Boolean true
+                | None   -> Boolean false)
+
+let l_and = function
+    exps -> let res = List.find ~f:(fun e ->
+                                  match e with
+                                  | List []       -> true
+                                  | Boolean false -> true
+                                  | _             -> false)
+                                exps
+            in (match res with
+                | Some _ -> Boolean false
+                | None   -> Boolean true)
+                  
 let equal = function
     exps -> let res = List.reduce ~f:(fun x y -> eq x y)
                                   exps

@@ -57,9 +57,8 @@ rule read =
   | float     { FLOAT (float_of_string (Lexing.lexeme lexbuf)) }
   | ratio     { RATIO (ratio_of_string (Lexing.lexeme lexbuf)) }
   | complex   { COMPLEX (complex_of_string (Lexing.lexeme lexbuf)) }
-  | "true"    { TRUE }
-  | "false"   { FALSE }
-  | "null"    { NULL }
+  | "#t"      { TRUE }
+  | "#f"      { FALSE }
   | '('       { LPAREN }
   | ')'       { RPAREN }
   | " . "     { DOT }
@@ -68,6 +67,9 @@ rule read =
   | "let"     { LET }
   | "lambda"  { LAMBDA }
   | "define"  { DEFINE }
+  | "not"     { NOT }
+  | "and"     { AND }
+  | "or"      { OR }
   | "+"       { ADD }
   | "*"       { MUL }
   | "-"       { SUB }
@@ -79,6 +81,8 @@ rule read =
   | "pair?"   { PAIRP }
   | "list?"   { LISTP }
   | "atom?"   { ATOMP }
+  | "null?"   { NULLP }
+  | '\''      { QMARK }
   | '"'       { read_string (Buffer.create 17) lexbuf }
   | text as s { SYMBOL s }
   | _ { raise (SyntaxError ("Unexpected char: " ^ Lexing.lexeme lexbuf)) }

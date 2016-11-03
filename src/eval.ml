@@ -47,6 +47,9 @@ let rec eval value env =
 
 and apply fn args env =
   match fn with
+  | Not       -> Expressions.l_not args
+  | And       -> Expressions.l_and args
+  | Or        -> Expressions.l_or  args
   | Add       -> Expressions.sum   args
   | Sub       -> Expressions.sub   args
   | Mul       -> Expressions.mul   args
@@ -58,6 +61,7 @@ and apply fn args env =
   | Pairp
   | Listp     -> Expressions.pairp args
   | Atomp     -> Expressions.atomp args
+  | Nullp     -> Expressions.nullp args
   | Symb s    -> let proc = lookup env s in
                  (match proc with
                   | Some (Closure cls) -> call cls args env

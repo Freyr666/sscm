@@ -11,14 +11,17 @@ open Expressions;;
 %token <string> STRING
 %token TRUE
 %token FALSE
-%token NULL
 %token LPAREN
 %token RPAREN
 %token QUOTE
+%token QMARK
 %token IF
 %token LET
 %token LAMBDA
 %token DEFINE
+%token NOT
+%token AND
+%token OR
 %token ADD
 %token MUL
 %token SUB
@@ -30,10 +33,10 @@ open Expressions;;
 %token PAIRP
 %token LISTP
 %token ATOMP
+%token NULLP
 %token DOT
 
 %token EOF
-%token EOL
 
 %start <Expressions.sexp option> prog
 %%
@@ -50,6 +53,8 @@ sexp:
           { Dot (sl, s) }
   | QUOTE
           { Symbol Quote }
+  | QMARK; s = sexp
+          { List [Symbol Quote; s] }
   | IF
           { Symbol If }
   | LET
@@ -58,6 +63,12 @@ sexp:
           { Symbol Lambda }
   | DEFINE
           { Symbol Define }
+  | NOT
+          { Symbol Not }
+  | AND
+          { Symbol And }
+  | OR
+          { Symbol Or }
   | ADD
           { Symbol Add }
   | MUL
@@ -80,6 +91,8 @@ sexp:
           { Symbol Atomp }
   | LISTP
           { Symbol Listp }
+  | NULLP
+          { Symbol Nullp }
   | s = SYMBOL
           { Symbol (Symb s) }
   | s = STRING
@@ -96,8 +109,6 @@ sexp:
     { Boolean true }
   | FALSE
     { Boolean false }
-  | NULL
-    { List [] }
   ;
 
 list_sexp:
