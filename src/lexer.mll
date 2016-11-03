@@ -67,6 +67,9 @@ rule read =
   | "let"     { LET }
   | "lambda"  { LAMBDA }
   | "define"  { DEFINE }
+  | "eval"    { EVAL }
+  | "read"    { READ }
+  | "load"    { LOAD }
   | "not"     { NOT }
   | "and"     { AND }
   | "or"      { OR }

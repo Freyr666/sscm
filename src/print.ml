@@ -24,6 +24,9 @@ let string_of_symbol = function
   | Define    -> "define"
   | Lambda    -> "lambda"
   | Let       -> "let"
+  | Read      -> "read"
+  | Eval      -> "eval"
+  | Load      -> "load"
   | Tail_call -> "TAIL CALL:OPTIMISED OUT"
    
 let rec string_of_exp = function

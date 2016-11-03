@@ -19,6 +19,9 @@ open Expressions;;
 %token LET
 %token LAMBDA
 %token DEFINE
+%token READ
+%token EVAL
+%token LOAD
 %token NOT
 %token AND
 %token OR
@@ -63,6 +66,12 @@ sexp:
           { Symbol Lambda }
   | DEFINE
           { Symbol Define }
+  | READ
+          { Symbol Read }
+  | EVAL
+          { Symbol Eval }
+  | LOAD
+          { Symbol Load }
   | NOT
           { Symbol Not }
   | AND

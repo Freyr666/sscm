@@ -12,6 +12,9 @@ type symb =
 | Define
 | Lambda
 | Let
+| Read
+| Eval
+| Load
 | Not
 | And
 | Or

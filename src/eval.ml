@@ -2,6 +2,7 @@ open Number
 open Expressions
 open Env
 open Print
+open Read
 
 open Core.Std
    
@@ -39,6 +40,19 @@ let rec eval value env =
     -> define def exps env
   | List (Closure cls :: args)
     -> call cls args env
+  | List (Symbol Read :: String s :: [])
+    -> let sexp = Read.read s
+       in (match sexp with
+           | Some e -> List (Symbol Quote :: e :: [])
+           | None   -> raise Wrong_exp_type)
+  | List (Symbol Eval :: exp :: [])
+    -> (match (eval exp env) with
+        | List [Symbol Quote; e] -> eval e env
+        | _                      -> raise Wrong_exp_type)
+  | List (Symbol Load :: String f :: [])
+    -> List.fold ~init:(List[])
+                 ~f:(fun acc e -> eval e env)
+                 (load_file f)
   | List (Symbol fn :: args)
     -> apply fn
              (List.map args ~f:(fun arg -> eval arg env))
