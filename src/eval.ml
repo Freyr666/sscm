@@ -114,7 +114,9 @@ and define def exps env =
 
 and optimise_cls name cls =
   let rec opt_body = function
-    | List (Symbol Symb name :: args) -> List (Symbol Tail_call :: args)
+    | List (Symbol Symb n :: args) as exp -> if n = name
+                                             then List (Symbol Tail_call :: args)
+                                             else exp
     | List (Symbol If :: exp1 :: exp2 :: [])
       -> List (Symbol If :: (opt_body exp1) :: (opt_body exp2) :: [])
     | exp -> exp
