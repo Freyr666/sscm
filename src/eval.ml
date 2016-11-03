@@ -78,8 +78,9 @@ and apply fn args env =
   | Nullp     -> Expressions.nullp args
   | Symb s    -> let proc = lookup env s in
                  (match proc with
-                  | Some (Closure cls) -> call cls args env
-                  | Some _ 
+                  | Some (Closure cls) -> call  cls args env
+                  | Some (Symbol fn)   -> apply fn  args env
+                  | Some _
                   | None  -> raise Wrong_exp_type)
   | _ -> raise Wrong_exp_type
 

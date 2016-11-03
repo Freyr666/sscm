@@ -45,7 +45,7 @@ let complex = '-'? float? im
 
 let white = [' ' '\t']+
 let newline = '\r' | '\n' | "\r\n"
-let text = ['a'-'z' 'A'-'Z' '_'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-' '?']*
+let text = ['a'-'z' 'A'-'Z' '_'] ['a'-'z' 'A'-'Z' '0'-'9' '_' '-' '>' '=' '<' '?' '!' '$' '%' '&' '*' '+' '.' '/' ':' '@' '^' '~']*
              
 let eq = "eq?" | "equal?"
              
